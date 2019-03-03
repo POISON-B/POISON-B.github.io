@@ -1,0 +1,74 @@
+<div class="sidebar-toggle">
+  <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+  </div>
+</div>
+
+
+<aside id="sidebar" class="sidebar">     
+  <div class="sidebar-inner">
+    <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <!-- 头像 -->
+            <img class="site-author-image" itemprop="image" src="/images/1757571.jpg" alt="Shark">
+            <p class="site-author-name" itemprop="name">Shark</p>
+            <p class="site-description motion-element" itemprop="description">Be YourSelf</p>
+        </div>
+        <nav class="site-state motion-element">
+            <div class="site-state-item site-state-posts">
+              <a href="/">
+                <span class="site-state-item-count">{{ paginator.total_posts }}</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+
+            <div class="site-state-item site-state-categories">
+              <a href="/classify">
+                <span class="site-state-item-count">{{ site.categories | size }}</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+ 
+            <div class="site-state-item site-state-tags">
+              <a href="/classify/index.html">
+                <span class="site-state-item-count">{{ site.tags | size }}</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+        </nav>
+
+          <!-- <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div> -->
+        
+
+          <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/POISON-B" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>           
+          </div>
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-link"></i>
+              友情链接👭
+            </div>
+            <ul class="links-of-blogroll-list">
+                <li class="links-of-blogroll-item">
+                  <a href="https://www.nowcoder.com/4512295 ||" title="牛客网" target="_blank">牛客网</a>
+                </li>
+            </ul>
+          </div>
+      </div>
+    </section>
+  </div>
+</aside>
