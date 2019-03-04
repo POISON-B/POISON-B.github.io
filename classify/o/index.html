@@ -1,0 +1,41 @@
+---
+layout: index
+---
+<main id="main" class="main">
+  <div class="main-inner">
+    <div class="content-wrap">
+      <div id="content" class="content"> 
+          <div class="post-block category">
+              <div id="posts" class="posts-collapse">
+                <div class="collection-title">
+                  <h1>o<small>分类</small>
+                  </h1>
+                </div>
+                {% for post in site.categories.o %}
+                <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+                  <h1 class="archive-year" id="{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}">{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}</h1>
+                  {% if year != y %}
+                  {% assign year = y %}
+                  <h1 class="archive-year" id="{{ y }}">{{ y }}</h1>
+                  {% endif %}
+                  <header class="post-header">
+                    <h2 class="post-title">
+                        <a class="post-title-link" href="{{ post.url }}" itemprop="url">
+                          <span itemprop="name">{{ post.title }}</span>
+                        </a>
+                    </h2>
+                    <div class="post-meta">
+                      <time class="post-time" itemprop="dateCreated" datetime="{{ post.date | date:"%m/%d"}}" content="{{ post.date | date:"%m/%d"}}">
+                        {{ post.date | date:"%m/%d"}}
+                      </time>
+                    </div>
+                  </header>
+                </article>
+                {% endfor %}
+              </div>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</main>  

@@ -1,47 +1,46 @@
 ---
+layout: index
 ---
-<!DOCTYPE html>
-<html class="theme-next mist use-motion" lang="zh-Hans">
-  <!-- 加载header START  -->
-  {% include header.html %}
-  <!-- 加载header END  -->
 
-      <!-- 博客主体 START -->
-      <main id="main" class="main">
-          <div class="main-inner">
-            <div class="content-wrap">
-              <div id="content" class="content"> 
-                <div class="post-block archive">
-                  <div id="posts" class="posts-collapse">
-                    <span class="archive-move-on"></span>         
-                    <span class="archive-page-counter">
-                      嗯..! 目前共计 {{ paginator.total_posts }} 篇日志。 继续努力。
-                    </span>
-                      <div class="collection-title">
-                      </div>
-                      {% for post in site.posts %}
-                      <h1 class="archive-year" id="archive-year-2019">{{ post.date | date:"%Y"}}</h1>
-                      <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-                        <header class="post-header">
-                          <h2 class="post-title">
-                                <a class="post-title-link" href="{{ post.url }}" itemprop="url">
-                                    <span itemprop="name">{{ post.title }}</span>
-                                </a>
-                          </h2>
-                          <div class="post-meta">
-                            <time class="post-time" itemprop="dateCreated" datetime="{{ post.date }}" content="{{ post.date }}">
-                              {{ post.date | date:"%m/%d"}}
-                            </time>
-                          </div>
-                        </header>
-                      </article>
-                    {% endfor %}  
 
-                  </div>
+  <!-- 博客主体 START -->
+  <main id="main" class="main">
+    <div class="main-inner">
+      <div class="content-wrap">
+        <div id="content" class="content"> 
+          <div class="post-block archive">
+            <div id="posts" class="posts-collapse">
+              <span class="archive-move-on"></span>         
+              <span class="archive-page-counter">
+              </span>
+                <div class="collection-title">
                 </div>
-                
-              </div>
+                {% for post in site.posts %}
+                <h1 class="archive-year" id="{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}">{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}</h1>
+                {% if year != y %}
+                {% assign year = y %}
+                <h1 class="archive-year" id="{{ y }}">{{ y }}</h1>
+                {% endif %}
+                <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+                  <header class="post-header">
+                    <h2 class="post-title">
+                          <a class="post-title-link" href="{{ post.url }}" itemprop="url">
+                              <span itemprop="name">{{ post.title }}</span>
+                          </a>
+                    </h2>
+                    <div class="post-meta">
+                      <time class="post-time" itemprop="dateCreated" datetime="{{ post.date }}" content="{{ post.date }}">
+                        {{ post.date | date:"%m/%d"}}
+                      </time>
+                    </div>
+                  </header>
+                </article>
+              {% endfor %}  
+
             </div>
           </div>
-      </main>
-</html>
+          
+        </div>
+      </div>
+    </div>
+  </main>

@@ -20,7 +20,7 @@
         <nav class="site-state motion-element">
             <div class="site-state-item site-state-posts">
               <a href="/">
-                <span class="site-state-item-count">{{ paginator.total_posts }}</span>
+                <span class="site-state-item-count">{{ site.posts | size }}</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -40,12 +40,12 @@
             </div>
         </nav>
 
-          <!-- <div class="feed-link motion-element">
-            <a href="/atom.xml" rel="alternate">
+          <div class="feed-link motion-element">
+            <a href="/index.html.back" rel="alternate">
               <i class="fa fa-rss"></i>
-              RSS
+              联系我
             </a>
-          </div> -->
+          </div>
         
 
           <div class="links-of-author motion-element">

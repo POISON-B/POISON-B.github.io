@@ -742,56 +742,19 @@
           <div class="main-inner">
             <div class="content-wrap">
               <div id="content" class="content"> 
-                  <main id="main" class="main">
-  <div class="main-inner">
-    <div class="content-wrap">
-      <div id="content" class="content"> 
-          <div id="posts" class="posts-expand">
-              <div class="post-block page">
-                <header class="post-header">
-                  <h1 class="post-title" itemprop="name headline">分类</h1>
-                </header>
-                <div class="post-body">
-                    <div class="category-all-page">
-                      <div class="category-all-title">
-                          目前共计2个分类
-                      </div>
+                  <section id="posts" class="posts-expand">
                       
-                        <div class="category-all">
-                          <ul class="category-list">
-                            <li class="category-list-item">
-                              <a class="category-list-link" href="/classify/tech/">tech</a>
-                              <span class="category-list-count">1</span>
-                            </li>
-                          </ul>
-                        </div>
                       
-                        <div class="category-all">
-                          <ul class="category-list">
-                            <li class="category-list-item">
-                              <a class="category-list-link" href="/classify/车市/">车市</a>
-                              <span class="category-list-count">1</span>
-                            </li>
-                          </ul>
-                        </div>
+                      <!-- 分页 start -->
                       
-                    </div>
-                  
-                </div> 
+                      <!-- 分页 END   -->
+                  </section>
               </div>
             </div>
-            
           </div>
-      </div>
+      </main>
+       <!-- 博客主体 END -->
+       
     </div>
-  </div>
-</main>
-                </div>
-              </div>
-            </div>
-        </main>
-         <!-- 博客主体 END -->
-         
-      </div>
-    </body>      
-  </html>
+  </body>      
+</html>
