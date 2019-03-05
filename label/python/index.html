@@ -8,10 +8,10 @@ layout: index
           <div class="post-block category">
               <div id="posts" class="posts-collapse">
                 <div class="collection-title">
-                  <h1>o<small>分类</small>
+                  <h1>python<small>分类</small>
                   </h1>
                 </div>
-                {% for post in site.categories.o %}
+                {% for post in site.tags.python %}
                 <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
                   <h1 class="archive-year" id="{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}">{% capture y %}{{post.date | date:"%Y"}}{% endcapture %}</h1>
                   {% if year != y %}
