@@ -742,12 +742,390 @@
           <div class="main-inner">
             <div class="content-wrap">
               <div id="content" class="content"> 
-                  <p><a href="https://github.com/jekyll/minima">minima</a></p>
+                  <!-- TOC -->
+<p>autoauto- <a href="#1-python-多线程第一课">1. python 多线程第一课</a>auto    - <a href="#101-举例说明多线程操作">1.0.1. 举例说明多线程操作：</a>auto  - <a href="#11-简单多线程实例">1.1. 简单多线程实例：</a>auto    - <a href="#111-函数方式实现">1.1.1. 、函数方式实现</a>auto    - <a href="#112-类方式实现">1.1.2. 、类方式实现</a>auto  - <a href="#12-线程间的通信">1.2. 线程间的通信</a>auto    - <a href="#121-共享变量不推荐">1.2.1. 、共享变量(不推荐)</a>auto      - <a href="#1211-lock">1.2.1.1. 、Lock</a>auto      - <a href="#1212-rlock-可重入的锁">1.2.1.2. 、RLock (可重入的锁)</a>auto  - <a href="#13-queue-通信">1.3. 、queue 通信</a>auto    - <a href="#131-queue-常用方法介绍">1.3.1. queue 常用方法介绍</a>autoauto<!-- /TOC --></p>
 
-<p>You can find the source code for Jekyll at GitHub:
-<a href="https://github.com/jekyll">jekyll</a> /
-<a href="https://github.com/jekyll/jekyll">jekyll</a></p>
+<h1 id="1-python-多线程第一课">1. python 多线程第一课</h1>
 
+<p>说到 python 多线程，绕不开的话题就是 GIL(详情不赘述) GIL 使得同一时刻只有一个线程在一个 CPU 上执行字节码，，无法将多个线程映射到多个 cpu 上执行，这就使得 python 的多线程性能受限。</p>
+
+<h3 id="101-举例说明多线程操作">1.0.1. 举例说明多线程操作：</h3>
+
+<p><em>有一个爬虫，需要爬取一个网站的所有文章，必须做两步操作。
+  1、抓取所有文章列表 url。
+  2、根据文章 url 抓取文章详细内容。
+这两个步骤如果不用多线程，就必须先执行第 1 步，当所有文章列表抓取完成后，再执行第 2 步。如果使用多线程，可以实现，先执行第一步，抓取文章 url 放入共享变量，接着执行第 2 不取出共享变量中的 url 抓取文章详情。几乎同步执行，提高爬虫效率。</em></p>
+
+<h2 id="11-简单多线程实例">1.1. 简单多线程实例：</h2>
+
+<h3 id="111-函数方式实现">1.1.1. 、函数方式实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import time
+import threading
+
+def get_detail_html(url):
+    """
+    获取文章的详细内容
+    :param url:
+    :return:
+    """
+    print("get detail html started")
+    time.sleep(2)
+    print("get detail html end")
+
+
+def get_detail_url(url):
+    """
+    获取文章url
+    :param url:
+    :return:
+    """
+    print("get detail url started")
+    time.sleep(4)
+    print("get detail url end")
+
+if  __name__ == "__main__":
+    # windows下python多线程操作必须放在mian下，linux不存在
+    # target =============&gt; 后面是需要执行的函数名， 注意只能是函数名，不能是函数调用
+    # args   =============&gt; 后面是函数需要的参数，注意必须是元组
+    thread1 = threading.Thread(target=get_detail_url, args=("url",), daemon=True)
+    thread2 = threading.Thread(target=get_detail_html, args=("url",))
+
+    start_time = time.time()
+
+    # 设置为守护线程。当主线程结束时，不要管子线程是否执行完毕都直杀掉所有线程
+    # 此设置也可在，实例化Thread时添加daemon参数实现
+    # thread1.daemon = True
+    thread2.daemon = True
+
+    # 启动子线程
+    thread1.start()
+    thread2.start()
+
+    # 等待上面两个子线程执行完毕。才继续向下执行主线程。
+    thread1.join()
+    thread2.join()
+    print ("last time: {}".format(time.time()-start_time))
+
+</code></pre></div></div>
+
+<h3 id="112-类方式实现">1.1.2. 、类方式实现</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import time
+import threading
+
+
+class GetDetailHtml(threading.Thread):
+    """
+    继承threading.Thread类
+    """
+    def __init__(self, name):
+        super().__init__(name=name)
+
+    def run(self):
+        """
+        重写run方法，程序的具体逻辑
+        :return:
+        """
+        print("get detail html started")
+        time.sleep(2)
+        print("get detail html end")
+
+
+class GetDetailUrl(threading.Thread):
+    def __init__(self, name):
+        super().__init__(name=name)
+
+    def run(self):
+        print("get detail url started")
+        time.sleep(4)
+        print("get detail url end")
+
+if  __name__ == "__main__":
+    thread1 = GetDetailHtml("get_detail_html")
+    thread2 = GetDetailUrl("get_detail_url")
+    start_time = time.time()
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    print ("last time: {}".format(time.time()-start_time))
+
+</code></pre></div></div>
+
+<h2 id="12-线程间的通信">1.2. 线程间的通信</h2>
+
+<p>背景介绍：</p>
+
+<p>线程之间为什么需要通信？
+通常在多线程应用中,完成一个任务是需要几个线程协助的。以上面的爬虫例子来说，子线程 1 爬取文章列表 url，子线程 2 则需要根据子线程 1 抓取的文章 url 来抓取文章详细内容，这一来一回之间必然涉及到线程间的通信问题</p>
+
+<p>线程间的通信方式</p>
+
+<h3 id="121-共享变量不推荐">1.2.1. 、共享变量(不推荐)</h3>
+
+<p>代码说明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import time
+import threading
+ditail_url_list = []
+
+def get_detail_html(urls):
+    """
+    获取文章的详细内容
+    :param url:
+    :return:
+    """
+    while True:
+      print("get detail html started")
+      if urls:
+          # 判断共享变量是否有值， 弹出列表中的最后一个值
+          url = urls.pop()
+          time.sleep(2)
+          print("get detail html end")
+
+
+def get_detail_url(urls):
+    """
+    获取文章url
+    :param url:
+    :return:
+    """
+    print("get detail url started")
+    # 将抓取的文章url放入共享列表里
+    urls.append('url')
+    time.sleep(4)
+    print("get detail url end")
+
+if  __name__ == "__main__":
+    thread1 = threading.Thread(target=get_detail_url, args=("url",))
+    thread2 = threading.Thread(target=get_detail_html, args=("url",)
+    start_time = time.time()
+    thread1.daemon = True
+    thread2.daemon = True
+    thread1.start()
+    thread2.start()
+    thread1.join()
+    thread2.join()
+    print ("last time: {}".format(time.time()-start_time))
+</code></pre></div></div>
+
+<p>缺点：共享变量存在一个致命缺点，（<strong>线程安全问题</strong>）<br />
+代码说明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import threading
+
+test_number = 0
+
+def test_add():
+    """
+    执行共享变量加1操作
+    :return:
+    """
+    # global关键字，声明全局作用域，使函数能修改全局变量的值
+    global test_number
+
+    for n in range(1000000):
+        test_number += 1
+
+def test_subtraction():
+    """
+    执行共享变量减1操作
+    :return:
+    """
+    global test_number
+
+    for n in range(1000000):
+        test_number -= 1
+
+if __name__ == '__main__':
+    thread1 = threading.Thread(target=test_add, daemon=True)
+    thread2 = threading.Thread(target=test_subtraction, daemon=True)
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    print(test_number)
+</code></pre></div></div>
+
+<p>运行以上代码可以看见每次的结果都是不一样的，依常理来不管运行几次 ”test_number“ 的值都应该是固定的 0，因为我先加 1000000 次完了再减 1000000 次。但是真实结果却不是这样的，这说明了使用共享变量来实现线程间的通信是不安全的。</p>
+
+<p><strong>形成原因：这是因为在线程运行中 GIL 适当的时候释放的(适当时候的意思：python 会根据字节码的执行行数自己判断或者是根据时间片来释放 GIL，还会在遇到 io 操作时自动释放 GIL)。 关于 io 操作自动释放 GIL 锁的特性，使得 python 多线程在 io 频繁的情况下是非常适用的</strong></p>
+
+<p>解决方法： 根据问题形成原因可想到解决方法是，当一个子线程在操作时，其他变量就不能操作，必须等到上个子线程操作完成后，非能继续操作。这就引申出了 python 多线程编程中的锁概念。</p>
+
+<h4 id="1211-lock">1.2.1.1. 、Lock</h4>
+
+<p>代码说明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import threading
+from threading import Lock
+
+test_number = 0
+
+def test_add(lock):
+    """
+    执行共享变量加1操作
+    :return:
+    """
+    # global关键字，声明全局作用域，使函数能修改全局变量的值
+    global test_number
+
+    for n in range(1000000):
+        # 获得锁。成功后往下执行,不成功就会一直等待直到获得锁，所以一定要用完锁后释放锁
+        lock.acquire()
+
+        # 再一次视图获取锁，此时会形成死锁问题，在acquire后必须要release
+        # lock.acquire()
+        test_number += 1
+
+        # 释放锁，不然其他代码段将不能运行
+        lock.release()
+
+def test_subtraction(lock):
+    """
+    执行共享变量减1操作
+    :return:
+    """
+    global test_number
+
+    for n in range(1000000):
+        lock.acquire()
+        test_number -= 1
+        lock.release()
+
+if __name__ == '__main__':
+    lock = Lock()
+    thread1 = threading.Thread(target=test_add, args=(lock,), daemon=True)
+    thread2 = threading.Thread(target=test_subtraction, args=(lock,), daemon=True)
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    print(test_number)
+
+</code></pre></div></div>
+
+<p>总结：用锁的方法可以解决线程安全，但是也存在一些问题，<strong>影响性能，不注意会形成死锁</strong></p>
+
+<h4 id="1212-rlock-可重入的锁">1.2.1.2. 、RLock (可重入的锁)</h4>
+<p>上面的 Lock 存在一个问题，不能在一个 acquire 执行后不 release 掉的情况下，再一次 acquire，这将让程序陷入死锁中从而不能往下执行。RLock 解决了这个问题</p>
+
+<p>代码说明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import threading
+from threading import RLock
+
+test_number = 0
+
+def test_add(lock):
+  """
+  执行共享变量加1操作
+  :return:
+  """
+  # global关键字，声明全局作用域，使函数能修改全局变量的值
+  global test_number
+
+  for n in range(1000000):
+      lock.acquire()
+      lock.acquire()
+
+      test_number += 1
+      lock.release()
+      lock.release()
+
+def test_subtraction(lock):
+  """
+  执行共享变量减1操作
+  :return:
+  """
+  global test_number
+
+  for n in range(1000000):
+      lock.acquire()
+      test_number -= 1
+      lock.release()
+
+
+if __name__ == '__main__':
+  lock = RLock()
+  thread1 = threading.Thread(target=test_add, args=(lock,), daemon=True)
+  thread2 = threading.Thread(target=test_subtraction, args=(lock, ), daemon=True)
+  thread1.start()
+  thread2.start()
+
+  thread1.join()
+  thread2.join()
+
+  print(test_number)
+</code></pre></div></div>
+
+<p>总结：解决了不能重复 acquire 的问题。<strong>注意：acquire 和 release 必须成对出现，即有几个 acquire 就必须有相应个数的 release。不然还会出现死锁问题</strong></p>
+
+<h2 id="13-queue-通信">1.3. 、queue 通信</h2>
+<p>使用 python 自带的消息队列来实现线程间的通信。 代码说明：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from queue import Queue
+import time
+import threading
+
+
+def get_detail_html(queue):
+    #爬取文章详情页
+    while True:
+        # 从queue中获得值，如果queue里没值会一直阻塞在此处
+        url = queue.get()
+        print("get detail html started")
+        time.sleep(2)
+        print("get detail html end")
+
+
+def get_detail_url(queue):
+    # 爬取文章列表页
+    while True:
+        print("get detail url started")
+        time.sleep(4)
+        for i in range(20):
+            # 将值写入queue
+            queue.put("http://projectsedu.com/{id}".format(id=i))
+        print("get detail url end")
+
+
+
+if  __name__ == "__main__":
+    # 设置队列的空间大小，当队列满了时put()方法阻塞，直到队列有空间，以节约内存。
+    detail_url_queue = Queue(maxsize=1000)
+    thread_detail_url = threading.Thread(target=get_detail_url, args=(detail_url_queue,))
+    for i in range(10):
+        html_thread = threading.Thread(target=get_detail_html, args=(detail_url_queue,))
+        html_thread.start()
+
+    # 向队列发送task_done信号。
+    detail_url_queue.task_done()
+
+    # 阻塞主线程，等待task_done信号，退出程序
+    detail_url_queue.join()
+</code></pre></div></div>
+
+<h3 id="131-queue-常用方法介绍">1.3.1. queue 常用方法介绍</h3>
+
+<p>get() =====&gt; 从队列中取值(阻塞)
+put() =====&gt; 将值写入队列
+get_nowait() =====&gt; 从队列中取值(异步)
+put_nowait() =====&gt; 将值写入队列(异步)
+qsize() =====&gt; 获取队列的长度
+empty() =====&gt; 判断队列是否为空
+full() =====&gt; 判断队列是否已满
+task_done() =====&gt; 发送队列关闭信号
+join() =====&gt; 阻塞主线程，直到接收 task_done 信号</p>
+
+<p><strong>————————————END—————————</strong></p>
 
                 </div>
               </div>
